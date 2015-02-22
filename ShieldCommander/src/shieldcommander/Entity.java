@@ -6,13 +6,15 @@ import org.newdawn.slick.geom.Shape;
 
 public abstract class Entity { 
 	
-	protected float x;         // center x
-	protected float y;         // center y
-	protected float direction; // 0 up 90 right 180 down 270 left
-	protected float speed;  // pixels/second
-	protected Shape shape;     // bounds (for collision detection)
-	protected int type; // identify the type of entity
-	protected Image image;     // image for drawing
+	protected boolean dead = false;
+	protected float x;         	// center x
+	protected float y;         	// center y
+	protected float direction; 	// 0 up 90 right 180 down 270 left
+	protected float speed;  	// pixels/second
+	protected Shape shape;		// bounds (for collision detection)
+	protected int type; 		// identify the type of entity
+	protected Image image;     	// image for drawing
+	protected boolean collidable = false;
 	public float getX() {
 		return x;
 	}
@@ -55,9 +57,24 @@ public abstract class Entity {
 	public void draw(Graphics g){
 		g.draw(shape);
 	}
+	public void explode(){
+		dead = true;
+	}
 	public abstract void update(int delta);
 	public abstract void collide(Entity other);
-	public abstract int getType();
-	
-	
+	public int getType() {
+		return type;
+	};
+	public boolean isDead() {
+		return dead;
+	}
+	public void setDead(boolean dead) {
+		this.dead = dead;
+	}
+	public boolean isCollidable() {
+		return collidable;
+	}
+	public void setCollidable(boolean collidable) {
+		this.collidable = collidable;
+	}	
 }
