@@ -16,7 +16,7 @@ Mothership - single large ship placed behind the row of fighters.
 	Fires large projectiles.  Game is over when a mothership is destroyed.
 	
 Damage:
-Your fleet's shields are designed to withstand it's own type of projectile.
+Your fleet's shields are designed to withstand its own type of projectile.
 Projectiles fired from your opponent will be more damaging than those fired
 from your own ships.  Large projectiles are more damaging than small projectiles.
 When a ships hitpoints drop to zero, it is destroyed and removed from play.
