@@ -23,8 +23,11 @@ public class ShieldCommander extends BasicGame {
 	static int redMotherCounter = 0;
 	static int blueMotherCounter = 0;
 
+	// time between shots
 	private int motherShotTime = 10000;
-	private int fighterShotTime = 2000; // time(ms) between fighter shots
+	private int fighterShotTime = 2000;
+	
+	// entities
 	private ArrayList<Entity> entities;
 	private Paddle blueShield;
 	private Paddle redShield;
@@ -58,7 +61,9 @@ public class ShieldCommander extends BasicGame {
 			for (int j = 0; j < c.getAxisCount(); j++) {
 				c.setDeadZone(j, 0.2f);
 			}
-			controllers.add(Controllers.getController(i));
+			// ignore generic USB devices
+			if(!(c.getName().contains("USB")))
+				controllers.add(Controllers.getController(i));
 		}
 
 		// add entities to game board
@@ -183,6 +188,7 @@ public class ShieldCommander extends BasicGame {
 					"Shield Commander"));
 			app.setDisplayMode(800, 600, false);
 			app.setAlwaysRender(true);
+			app.setVSync(true);
 			app.start();
 		} catch (SlickException e) {
 			e.printStackTrace();
