@@ -109,53 +109,60 @@ public class ShieldCommander extends BasicGame {
 
 	public void update(GameContainer container, int delta)
 			throws SlickException {
-		// remove dead entities
-		ArrayList<Entity> toRemove = new ArrayList<Entity>();
-		for (Entity entity : entities) {
-			if (entity.isDead()) {
-				// decrement fighter count
-				if (entity.getType() == EntityType.blueFighter)
-					numBlueFighters--;
-				if (entity.getType() == EntityType.redFighter)
-					numRedFighters--;
-				// remove the object
-				toRemove.add(entity);
+		if (blueMother.isDead() || redMother.isDead())
+			container.pause();
+		else {
+			// remove dead entities
+			ArrayList<Entity> toRemove = new ArrayList<Entity>();
+			for (Entity entity : entities) {
+				if (entity.isDead()) {
+					// decrement fighter count
+					if (entity.getType() == EntityType.blueFighter)
+						numBlueFighters--;
+					if (entity.getType() == EntityType.redFighter)
+						numRedFighters--;
+					// remove the object
+					toRemove.add(entity);
+				}
+			}
+			for (int i = 0; i < toRemove.size(); i++)
+				entities.remove(toRemove.get(i));
+
+			// update the entities
+			for (Entity entity : entities) {
+				entity.update(delta);
+			}
+
+			// fighters shoot
+			blueFighterCounter += delta;
+			redFighterCounter += delta;
+			if (numBlueFighters > 0)
+				if (blueFighterCounter > fighterShotTime) {
+					blueFighters.get(rand.nextInt(numBlueFighters)).shoot(
+							entities, rand);
+					blueFighterCounter = 0;
+				}
+			if (numRedFighters > 0)
+				if (redFighterCounter > fighterShotTime) {
+					redFighters.get(rand.nextInt(numRedFighters)).shoot(
+							entities, rand);
+					redFighterCounter = 0;
+				}
+
+			// motherships shoot
+			blueMotherCounter += delta;
+			redMotherCounter += delta;
+			if (blueMotherCounter > motherShotTime) {
+				blueMother.shoot(entities, rand);
+				blueMotherCounter = 0;
+			}
+			if (redMotherCounter > motherShotTime) {
+				redMother.shoot(entities, rand);
+				redMotherCounter = 0;
 			}
 		}
-		for (int i = 0; i < toRemove.size(); i++)
-			entities.remove(toRemove.get(i));
-
-		// update the entities
-		for (Entity entity : entities) {
-			entity.update(delta);
-		}
-
-		// fighters shoot
-		blueFighterCounter += delta;
-		redFighterCounter += delta;
-		if (blueFighterCounter > fighterShotTime) {
-			redFighters.get(rand.nextInt(numRedFighters)).shoot(entities, rand);
-			blueFighterCounter = 0;
-		}
-
-		if (redFighterCounter > fighterShotTime) {
-			blueFighters.get(rand.nextInt(numBlueFighters)).shoot(entities,
-					rand);
-			redFighterCounter = 0;
-		}
-
-		// motherships shoot
-		blueMotherCounter += delta;
-		redMotherCounter += delta;
-		if (blueMotherCounter > motherShotTime) {
-			blueMother.shoot(entities, rand);
-			blueMotherCounter = 0;
-		}
-		if (redMotherCounter > motherShotTime) {
-			redMother.shoot(entities, rand);
-			redMotherCounter = 0;
-		}
 	}
+
 
 	public void controllerButtonPressed(int controller, int button) {
 		System.out.println(button + " button pressed on controller "
@@ -186,7 +193,7 @@ public class ShieldCommander extends BasicGame {
 		try {
 			AppGameContainer app = new AppGameContainer(new ShieldCommander(
 					"Shield Commander"));
-			app.setDisplayMode(800, 600, false);
+			app.setDisplayMode(720, 600, false);
 			app.setAlwaysRender(true);
 			app.setVSync(true);
 			app.start();
