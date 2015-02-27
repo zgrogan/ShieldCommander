@@ -14,6 +14,8 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
 public class ShieldCommander extends BasicGame {
+	
+	private Graphics g;
 
 	static ArrayList<Controller> controllers; // detected joysticks
 

@@ -1,8 +1,8 @@
 README.txt
 
 Shield Commander is a 2 player space shooter.
-As it is our first game, we decided to choose the first computer game we could think of, Pong,
-and borrow from it.
+As it is our first game, we decided to choose the first computer game we could think of, 
+Pong, and borrow from it.
 
 Premise:
 You are the Shield Commander.  It is your job to protect the fleet.

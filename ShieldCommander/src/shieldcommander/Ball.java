@@ -6,7 +6,6 @@ public class Ball extends Entity {
 	public static int windowX = 720;
 	public static int windowY = 600;
 	public static double PI = Math.PI;
-	public static int type = EntityType.largeBlueShot;
 	public static int inactiveTime = 400;
 	private int radius;
 	private int deltaCounter; // used for timers.
