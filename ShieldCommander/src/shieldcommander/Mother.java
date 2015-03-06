@@ -31,9 +31,5 @@ public class Mother extends Ship {
 	
 	public void collide(Entity other) {
 		super.collide(other);
-		if (this.type == EntityType.redMotherShip)
-			System.out.print("Red Mother ");
-		else System.out.print("Blue Mother ");
-		System.out.println(this.hitPoints + " HP remaining.");
 	}
 }

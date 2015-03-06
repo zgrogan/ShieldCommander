@@ -20,8 +20,6 @@ public abstract class Ship extends Entity {
 		if (other.isCollidable()) {
 			boolean isRed = (this.type == EntityType.redMotherShip 
 					|| this.type == EntityType.redFighter);
-			System.out.print("We are " + (isRed ? "red " : "blue "));
-			System.out.println("and were hit by " + other.getType());
 			int lost = 0;
 			switch (other.getType()) {
 			case EntityType.smallRedShot:
@@ -37,8 +35,7 @@ public abstract class Ship extends Entity {
 				lost = isRed ? 90 : 30;
 				break;
 			}
-			System.out.println("Lost " + lost + " HP.");
-		
+			this.hitPoints -= lost;
 		}
 		if (hitPoints < 1)
 			explode();
