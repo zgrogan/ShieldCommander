@@ -26,7 +26,7 @@ public class ShieldCommander extends BasicGame {
 	static int blueMotherCounter = 0;
 
 	// time between shots
-	private int motherShotTime = 10000;
+	private int motherShotTime = 5000;
 	private int fighterShotTime = 2000;
 	
 	// entities

@@ -7,7 +7,7 @@ import org.newdawn.slick.geom.Rectangle;
 public class Paddle extends Entity {
 	public static int windowX = 720;
 	public static int windowY = 600;
-	public static int CONTROLLER_ACCELERATION = 15;
+	public static int CONTROLLER_ACCELERATION = 20;
 	private int width;
 	private int height;
 	private Controller controller;
