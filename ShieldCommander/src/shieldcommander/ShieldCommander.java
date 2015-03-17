@@ -198,6 +198,7 @@ public class ShieldCommander extends BasicGame {
 			app.setDisplayMode(720, 600, false);
 			app.setAlwaysRender(true);
 			app.setVSync(true);
+			app.setTargetFrameRate(60);
 			app.start();
 		} catch (SlickException e) {
 			e.printStackTrace();
