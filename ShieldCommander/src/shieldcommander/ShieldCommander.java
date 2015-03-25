@@ -2,22 +2,37 @@ package shieldcommander;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Random;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Controller;
 import org.lwjgl.input.Controllers;
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
+import org.newdawn.slick.state.BasicGameState;
+import org.newdawn.slick.state.StateBasedGame;
 
-public class ShieldCommander extends BasicGame {
-	
-	private Graphics g;
+public class ShieldCommander extends BasicGameState {
 
-	static ArrayList<Controller> controllers; // detected joysticks
+	private static final int id = 1;
+	private StateBasedGame game;
+	private GameContainer gc;
+
+	// Win Counts
+	private int redWins = 0;
+	private int blueWins = 0;
+
+	// Wave Number
+	private int waveCount = 0;
+
+	// detected joysticks
+	static ArrayList<Controller> controllers;
+
+	// sounds
+	private HashMap<String, Sound> sounds;
 
 	// shot counters
 	static int redFighterCounter = 0;
@@ -27,8 +42,10 @@ public class ShieldCommander extends BasicGame {
 
 	// time between shots
 	private int motherShotTime = 5000;
-	private int fighterShotTime = 2000;
-	
+	private int fighterShotTime = 10000;
+	private int blueFighterShotTime;
+	private int redFighterShotTime;
+
 	// entities
 	private ArrayList<Entity> entities;
 	private Paddle blueShield;
@@ -40,17 +57,72 @@ public class ShieldCommander extends BasicGame {
 	private ArrayList<Fighter> redFighters;
 	private int numRedFighters = 5;
 	private Random rand; // random number generator
+	private static ShieldCommander myShieldCommander; // singleton object
 
-	public ShieldCommander(String title) {
-		super(title);
+	public static ShieldCommander getSheildCommander() {
+		if (myShieldCommander == null)
+			myShieldCommander = new ShieldCommander();
+		return myShieldCommander;
+	}
+	
+	// singleton constructor
+	private ShieldCommander() {
+		sounds = new HashMap<String, Sound>();
 	}
 
-	public void init(GameContainer container) throws SlickException {
+	public int getID() {
+		return id;
+	}
+
+	@Override
+	public void enter(GameContainer gc, StateBasedGame game) {
+		try {
+			waveCount += 1;
+			sounds.get("music").stop();
+
+			init(this.gc, this.game);
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void init(GameContainer container, StateBasedGame game)
+			throws SlickException {
+		this.gc = container;
+		this.game = game;
 		try {
 			Controllers.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
+
+		// initialize sounds
+		sounds.put("ballExplode", new Sound("sounds/Boom/Hit.ogg"));
+		Ball.setExplodeSound(sounds.get("ballExplode"));
+		sounds.put("fighterExplode",
+				new Sound("sounds/Boom/FighterExplode.ogg"));
+		Fighter.setExplodeSound(sounds.get("fighterExplode"));
+		sounds.put("motherExplode", new Sound(
+				"sounds/Boom/MothershipExplode.ogg"));
+		Mother.setExplodeSound(sounds.get("motherExplode"));
+		sounds.put("redFighterShoot", new Sound("sounds/Pew/FighterFire1.wav"));
+		sounds.put("blueFighterShoot", new Sound("sounds/Pew/FighterFire2.wav"));
+		sounds.put("redMotherShoot",
+				new Sound("sounds/Pew/MothershipFire1.wav"));
+		sounds.put("blueMotherShoot", new Sound(
+				"sounds/Pew/MothershipFire2.wav"));
+		switch (waveCount % 3) {
+		case 1:
+			sounds.put("music", new Sound("sounds/Music/Round1.wav"));
+			break;
+		case 2:
+			sounds.put("music", new Sound("sounds/Music/Round2.wav"));
+			break;
+		case 0:
+			sounds.put("music", new Sound("sounds/Music/Round3.wav"));
+			break;
+		}
+		sounds.get("music").loop();
 
 		// start random number generator
 		rand = new Random(new Date().getTime());
@@ -64,7 +136,7 @@ public class ShieldCommander extends BasicGame {
 				c.setDeadZone(j, 0.2f);
 			}
 			// ignore generic USB devices
-			if(!(c.getName().contains("USB")))
+			if (!(c.getName().contains("USB")))
 				controllers.add(Controllers.getController(i));
 		}
 
@@ -83,6 +155,9 @@ public class ShieldCommander extends BasicGame {
 		entities.add(redShield);
 
 		// add fighters
+		fighterShotTime = 10000;
+		numBlueFighters = 5;
+		numRedFighters = 5;
 		blueFighterCounter = rand.nextInt(fighterShotTime);
 		redFighterCounter = rand.nextInt(fighterShotTime);
 		blueFighters = new ArrayList<Fighter>();
@@ -91,7 +166,9 @@ public class ShieldCommander extends BasicGame {
 			Fighter blue = new Fighter(50 + 150 * i, 80);
 			Fighter red = new Fighter(50 + 150 * i, 550);
 			blue.setType(EntityType.blueFighter);
+			blue.setShotSound(sounds.get("blueFighterShoot"));
 			red.setType(EntityType.redFighter);
+			red.setShotSound(sounds.get("redFighterShoot"));
 			blueFighters.add(blue);
 			redFighters.add(red);
 			entities.add(blue);
@@ -105,31 +182,43 @@ public class ShieldCommander extends BasicGame {
 		redMother = new Mother(360, 575);
 		blueMother.setType(EntityType.blueMotherShip);
 		redMother.setType(EntityType.redMotherShip);
+		blueMother.setShotSound(sounds.get("blueMotherShoot"));
+		redMother.setShotSound(sounds.get("redMotherShoot"));
 		entities.add(blueMother);
 		entities.add(redMother);
 	}
 
-	public void update(GameContainer container, int delta)
+	public void update(GameContainer container, StateBasedGame game, int delta)
 			throws SlickException {
-		if (blueMother.isDead() || redMother.isDead())
-			container.pause();
-		else {
+		if (blueMother.isDead() || redMother.isDead()) {
+			if (blueMother.isDead())
+				redWins++;
+			if (redMother.isDead())
+				blueWins++;
+			game.enterState(0);
+		} else {
 			// remove dead entities
 			ArrayList<Entity> toRemove = new ArrayList<Entity>();
 			for (Entity entity : entities) {
 				if (entity.isDead()) {
 					// decrement fighter count
-					if (entity.getType() == EntityType.blueFighter)
+					if (entity.getType() == EntityType.blueFighter) {
 						numBlueFighters--;
-					if (entity.getType() == EntityType.redFighter)
+						blueFighters.remove(entity);
+						this.fighterShotTime -= 1000;
+					}
+					if (entity.getType() == EntityType.redFighter) {
 						numRedFighters--;
+						redFighters.remove(entity);
+						this.fighterShotTime -= 1000;
+					}
 					// remove the object
 					toRemove.add(entity);
 				}
 			}
 			for (int i = 0; i < toRemove.size(); i++)
 				entities.remove(toRemove.get(i));
-
+			
 			// update the entities
 			for (Entity entity : entities) {
 				entity.update(delta);
@@ -139,13 +228,13 @@ public class ShieldCommander extends BasicGame {
 			blueFighterCounter += delta;
 			redFighterCounter += delta;
 			if (numBlueFighters > 0)
-				if (blueFighterCounter > fighterShotTime) {
+				if (blueFighterCounter > fighterShotTime / numBlueFighters) {
 					blueFighters.get(rand.nextInt(numBlueFighters)).shoot(
 							entities, rand);
 					blueFighterCounter = 0;
 				}
 			if (numRedFighters > 0)
-				if (redFighterCounter > fighterShotTime) {
+				if (redFighterCounter > fighterShotTime / numRedFighters) {
 					redFighters.get(rand.nextInt(numRedFighters)).shoot(
 							entities, rand);
 					redFighterCounter = 0;
@@ -162,9 +251,18 @@ public class ShieldCommander extends BasicGame {
 				redMother.shoot(entities, rand);
 				redMotherCounter = 0;
 			}
+
+			// collision detection
+			for (Entity entity : entities) {
+				for (Entity other : entities) {
+					if (other != entity)
+						if (other.getShape().intersects(entity.getShape())) {
+							entity.collide(other);
+						}
+				}
+			}
 		}
 	}
-
 
 	public void controllerButtonPressed(int controller, int button) {
 		System.out.println(button + " button pressed on controller "
@@ -176,33 +274,20 @@ public class ShieldCommander extends BasicGame {
 	}
 
 	@Override
-	public void render(GameContainer container, Graphics g)
+	public void render(GameContainer container, StateBasedGame game, Graphics g)
 			throws SlickException {
 		for (Entity entity : entities) {
-			for (Entity other : entities) {
-				if (other != entity)
-					if (other.getShape().intersects(entity.getShape())) {
-						entity.collide(other);
-					}
-			}
 			g.fill(entity.shape);
 		}
 
 	}
 
-	public static void main(String[] args) {
+	public int getRedWins() {
+		return this.redWins;
+	}
 
-		try {
-			AppGameContainer app = new AppGameContainer(new ShieldCommander(
-					"Shield Commander"));
-			app.setDisplayMode(720, 600, false);
-			app.setAlwaysRender(true);
-			app.setVSync(true);
-			app.setTargetFrameRate(60);
-			app.start();
-		} catch (SlickException e) {
-			e.printStackTrace();
-		}
+	public int getBlueWins() {
+		return this.blueWins;
 	}
 
 }

@@ -1,5 +1,7 @@
 package shieldcommander;
 
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 import org.newdawn.slick.geom.Circle;
 
 public class Ball extends Entity {
@@ -9,6 +11,7 @@ public class Ball extends Entity {
 	public static int inactiveTime = 400;
 	private int radius;
 	private int deltaCounter; // used for timers.
+	private static Sound explodeSound;
 
 	public Ball(float x, float y, int radius, float direction, float speed) {
 
@@ -26,6 +29,10 @@ public class Ball extends Entity {
 		this.radius = radius;
 		this.shape = new Circle(x - (radius), y - (radius), radius);
 		this.deltaCounter = 0;
+	}
+	
+	public static void setExplodeSound(Sound sound) {
+		explodeSound = sound;
 	}
 
 	public void update(int delta) {
@@ -87,5 +94,11 @@ public class Ball extends Entity {
 	@Override
 	public int getType() {
 		return type;
+	}
+	
+	@Override
+	public void explode() {
+		explodeSound.play(1.0f, 0.5f);
+		super.explode();
 	}
 }

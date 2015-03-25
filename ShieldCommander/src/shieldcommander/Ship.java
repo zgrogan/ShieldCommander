@@ -3,16 +3,22 @@ package shieldcommander;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.newdawn.slick.Sound;
+
 public abstract class Ship extends Entity {
 
 	protected int hitPoints;
+	protected Sound shotSound;
+	protected Sound explodeSound;
 
 	public abstract void shoot(ArrayList<Entity> entities, Random rand);
 
 	@Override
 	public void update(int delta) {
-		if (hitPoints < 0)
+		if (hitPoints < 1) {
 			explode();
+			this.dead = true;
+		}
 	}
 
 	// handle collisions (hit by projectile)
@@ -40,4 +46,9 @@ public abstract class Ship extends Entity {
 		if (hitPoints < 1)
 			explode();
 	}
+	
+	public void setShotSound(Sound sound) {
+		this.shotSound = sound;
+	}
+
 }
