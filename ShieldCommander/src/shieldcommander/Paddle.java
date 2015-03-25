@@ -7,7 +7,7 @@ import org.newdawn.slick.geom.Rectangle;
 public class Paddle extends Entity {
 	public static int windowX = 720;
 	public static int windowY = 600;
-	public static int CONTROLLER_ACCELERATION = 20;
+	public static int CONTROLLER_ACCELERATION = 10;
 	private int width;
 	private int height;
 	private Controller controller;
@@ -30,6 +30,7 @@ public class Paddle extends Entity {
 	public void update(int delta) {
 		boolean hasController = controller != null;
 		this.x = hasController ? x + CONTROLLER_ACCELERATION
+				* (controller.isButtonPressed(0) ? 2 : 1)
 				* controller.getAxisValue(1) : Mouse.getX() - width / 2;
 		if (x < width / 2)
 			x = width / 2;
@@ -48,7 +49,7 @@ public class Paddle extends Entity {
 
 	@Override
 	public void explode() {
-		// empty method.  Paddle cannot die
+		// empty method. Paddle cannot die
 	}
 
 	@Override

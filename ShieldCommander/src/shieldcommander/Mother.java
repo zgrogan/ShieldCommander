@@ -9,7 +9,7 @@ import org.newdawn.slick.geom.Rectangle;
 public class Mother extends Ship {
 
 	public static int SHOT_SIZE = 9;
-	public static int SHOT_SPEED = 7;
+	public static int SHOT_SPEED = 6;
 	public static Sound explodeSound;
 	
 	public Mother(int x, int y) {
