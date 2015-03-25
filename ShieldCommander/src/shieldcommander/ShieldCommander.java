@@ -10,6 +10,7 @@ import org.lwjgl.input.Controller;
 import org.lwjgl.input.Controllers;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
 import org.newdawn.slick.state.BasicGameState;
@@ -20,6 +21,9 @@ public class ShieldCommander extends BasicGameState {
 	private static final int id = 1;
 	private StateBasedGame game;
 	private GameContainer gc;
+	
+	// Time before firing
+	private int deadTime = 3000;
 
 	// Win Counts
 	private int redWins = 0;
@@ -33,6 +37,7 @@ public class ShieldCommander extends BasicGameState {
 
 	// sounds
 	private HashMap<String, Sound> sounds;
+	private Music music;
 
 	// shot counters
 	static int redFighterCounter = 0;
@@ -78,7 +83,7 @@ public class ShieldCommander extends BasicGameState {
 	public void enter(GameContainer gc, StateBasedGame game) {
 		try {
 			waveCount += 1;
-			sounds.get("music").stop();
+			music.stop();
 
 			init(this.gc, this.game);
 		} catch (SlickException e) {
@@ -112,17 +117,17 @@ public class ShieldCommander extends BasicGameState {
 		sounds.put("blueMotherShoot", new Sound(
 				"sounds/Pew/MothershipFire2.wav"));
 		switch (waveCount % 3) {
-		case 1:
-			sounds.put("music", new Sound("sounds/Music/Round1.wav"));
-			break;
 		case 2:
-			sounds.put("music", new Sound("sounds/Music/Round2.wav"));
+			music = new Music("sounds/Music/Round1.ogg");
 			break;
 		case 0:
-			sounds.put("music", new Sound("sounds/Music/Round3.wav"));
+			music = new Music("sounds/Music/Round2.ogg");
+			break;
+		case 1:
+			music = new Music("sounds/Music/Round3.ogg");
 			break;
 		}
-		sounds.get("music").loop();
+		music.loop();
 
 		// start random number generator
 		rand = new Random(new Date().getTime());
@@ -158,8 +163,8 @@ public class ShieldCommander extends BasicGameState {
 		fighterShotTime = 10000;
 		numBlueFighters = 5;
 		numRedFighters = 5;
-		blueFighterCounter = rand.nextInt(fighterShotTime);
-		redFighterCounter = rand.nextInt(fighterShotTime);
+		blueFighterCounter = rand.nextInt(fighterShotTime/5) - deadTime;
+		redFighterCounter = rand.nextInt(fighterShotTime/5) - deadTime;
 		blueFighters = new ArrayList<Fighter>();
 		redFighters = new ArrayList<Fighter>();
 		for (int i = 0; i < 5; i++) {
@@ -176,8 +181,8 @@ public class ShieldCommander extends BasicGameState {
 		}
 
 		// add Motherships
-		blueMotherCounter = rand.nextInt(motherShotTime);
-		redMotherCounter = rand.nextInt(motherShotTime);
+		blueMotherCounter = rand.nextInt(motherShotTime/2)- deadTime;
+		redMotherCounter = rand.nextInt(motherShotTime/2) - deadTime;
 		blueMother = new Mother(360, 30);
 		redMother = new Mother(360, 575);
 		blueMother.setType(EntityType.blueMotherShip);
