@@ -2,28 +2,36 @@ package shieldcommander;
 
 import org.lwjgl.input.Controller;
 import org.lwjgl.input.Mouse;
+import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Rectangle;
 
 public class Paddle extends Entity {
 	public static int windowX = 720;
 	public static int windowY = 600;
 	public static int CONTROLLER_ACCELERATION = 10;
-	private int width;
-	private int height;
 	private Controller controller;
-
+	private float offset;
+	
 	// construct a Paddle at specified location and size
-	public Paddle(float x, float y, int width, int height) {
+	public Paddle(float x, float y, int width, int height, int type) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		shape = new Rectangle(x - width / 2, y - height / 2, width, height);
+		this.type = type;
+		offset = (type == EntityType.blueShield) ? height / 2 : -height / 2;
+
+		float[] points = new float[] { x, y + offset, x - width / 2, y - offset,
+				x + width / 2, y - offset };
+		// make a triangle to closely approximate hit box.
+		shape = new Polygon(points);
+
 	}
 
 	// Paddle construction with controller attached
-	public Paddle(float x, float y, int width, int height, Controller controller) {
-		this(x, y, width, height);
+	public Paddle(float x, float y, int width, int height, int type,
+			Controller controller) {
+		this(x, y, width, height, type);
 		this.controller = controller;
 	}
 
@@ -36,15 +44,10 @@ public class Paddle extends Entity {
 			x = width / 2;
 		if (x > windowX - width / 2)
 			x = (windowX - width / 2);
-		shape = new Rectangle(x - width / 2, y - height / 2, width, height);
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public void setWidth(int width) {
-		this.width = width;
+		float[] points = new float[] { x, y + offset, x - width / 2, y - offset,
+				x + width / 2, y - offset};
+		// make a triangle to closely approximate hit box.
+		shape = new Polygon(points);
 	}
 
 	@Override

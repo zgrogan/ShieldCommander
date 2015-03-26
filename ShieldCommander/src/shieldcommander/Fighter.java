@@ -3,6 +3,7 @@ package shieldcommander;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Sound;
 import org.newdawn.slick.geom.Rectangle;
 
@@ -18,7 +19,9 @@ public class Fighter extends Ship {
 	public Fighter(int x, int y) {
 		this.x = x;
 		this.y = y;
-		this.shape = new Rectangle(x - 70, y - 25, 140, 20);
+		this.width = 140;
+		this.height = 50;
+		this.shape = new Rectangle(x - width/2, y - 25, width, 20 );
 		this.hitPoints = 100;
 	}
 
@@ -35,6 +38,7 @@ public class Fighter extends Ship {
 		// create the ball and put into play
 		Ball ball = new Ball(this.x, this.y, SHOT_SIZE, direction, SHOT_SPEED);
 		ball.setType(ballType);
+		ball.setImage(shotImage);
 		entities.add(ball);
 		shotSound.play();
 	}

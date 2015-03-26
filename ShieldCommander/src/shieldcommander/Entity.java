@@ -7,6 +7,8 @@ import org.newdawn.slick.geom.Shape;
 public abstract class Entity { 
 	
 	protected boolean dead = false;
+	protected float width; 
+	protected float height;
 	protected float x;         	// center x
 	protected float y;         	// center y
 	protected float direction; 	// 0 up 90 right 180 down 270 left
@@ -76,5 +78,17 @@ public abstract class Entity {
 	}
 	public void setCollidable(boolean collidable) {
 		this.collidable = collidable;
+	}
+	public float getWidth() {
+		return width;
+	}
+	public void setWidth(float width) {
+		this.width = width;
+	}
+	public float getHeight() {
+		return height;
+	}
+	public void setHeight(float height) {
+		this.height = height;
 	}	
 }

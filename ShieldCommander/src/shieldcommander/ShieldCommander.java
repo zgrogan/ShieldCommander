@@ -10,6 +10,7 @@ import org.lwjgl.input.Controller;
 import org.lwjgl.input.Controllers;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
@@ -18,10 +19,23 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class ShieldCommander extends BasicGameState {
 
+	// game and container
 	private static final int id = 1;
 	private StateBasedGame game;
 	private GameContainer gc;
-	
+
+	// images
+	private Image smallBlueShotImage;
+	private Image smallRedShotImage;
+	private Image largeRedShotImage;
+	private Image largeBlueShotImage;
+	private Image blueFighterImage;
+	private Image redFighterImage;
+	private Image blueMotherImage;
+	private Image redMotherImage;
+	private Image redShieldImage;
+	private Image blueShieldImage;
+
 	// Time before firing
 	private int deadTime = 3000;
 
@@ -69,7 +83,7 @@ public class ShieldCommander extends BasicGameState {
 			myShieldCommander = new ShieldCommander();
 		return myShieldCommander;
 	}
-	
+
 	// singleton constructor
 	private ShieldCommander() {
 		sounds = new HashMap<String, Sound>();
@@ -100,6 +114,15 @@ public class ShieldCommander extends BasicGameState {
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
+
+		// images
+		blueFighterImage = new Image("data/img/spaceships/blue_fighter.png");
+		blueShieldImage = blueFighterImage;
+		blueMotherImage = blueFighterImage;
+		smallBlueShotImage = new Image("data/img/shots/blueShot.png");
+		largeBlueShotImage = smallBlueShotImage;
+		smallRedShotImage = new Image("data/img/shots/redShot.png");
+		largeRedShotImage = smallRedShotImage;
 
 		// initialize sounds
 		sounds.put("ballExplode", new Sound("sounds/Boom/Hit.ogg"));
@@ -149,13 +172,14 @@ public class ShieldCommander extends BasicGameState {
 		entities = new ArrayList<Entity>();
 
 		// add shields
-		redShield = controllers.size() > 0 ? new Paddle(50, 100, 100, 15,
-				controllers.get(0)) : new Paddle(50, 100, 100, 15);
-		redShield.setType(EntityType.redShield);
+		blueShield = controllers.size() > 0 ? new Paddle(50, 110, 100, 15,
+				EntityType.blueShield, controllers.get(0)) : new Paddle(50,
+				110, 100, 30, EntityType.blueShield);
+		blueShield.setImage(blueShieldImage);
 
-		blueShield = controllers.size() > 1 ? new Paddle(100, 500, 100, 15,
-				controllers.get(1)) : new Paddle(50, 500, 100, 15);
-		blueShield.setType(EntityType.blueShield);
+		redShield = controllers.size() > 1 ? new Paddle(100, 510, 100, 15,
+				EntityType.redShield, controllers.get(1)) : new Paddle(50, 510,
+				100, 30, EntityType.redShield);
 		entities.add(blueShield);
 		entities.add(redShield);
 
@@ -163,8 +187,8 @@ public class ShieldCommander extends BasicGameState {
 		fighterShotTime = 10000;
 		numBlueFighters = 5;
 		numRedFighters = 5;
-		blueFighterCounter = rand.nextInt(fighterShotTime/5) - deadTime;
-		redFighterCounter = rand.nextInt(fighterShotTime/5) - deadTime;
+		blueFighterCounter = rand.nextInt(fighterShotTime / 5) - deadTime;
+		redFighterCounter = rand.nextInt(fighterShotTime / 5) - deadTime;
 		blueFighters = new ArrayList<Fighter>();
 		redFighters = new ArrayList<Fighter>();
 		for (int i = 0; i < 5; i++) {
@@ -172,8 +196,11 @@ public class ShieldCommander extends BasicGameState {
 			Fighter red = new Fighter(50 + 150 * i, 550);
 			blue.setType(EntityType.blueFighter);
 			blue.setShotSound(sounds.get("blueFighterShoot"));
+			blue.setShotImage(smallBlueShotImage);
+			blue.setImage(blueFighterImage);
 			red.setType(EntityType.redFighter);
 			red.setShotSound(sounds.get("redFighterShoot"));
+			red.setShotImage(smallRedShotImage);
 			blueFighters.add(blue);
 			redFighters.add(red);
 			entities.add(blue);
@@ -181,14 +208,17 @@ public class ShieldCommander extends BasicGameState {
 		}
 
 		// add Motherships
-		blueMotherCounter = rand.nextInt(motherShotTime/2)- deadTime;
-		redMotherCounter = rand.nextInt(motherShotTime/2) - deadTime;
+		blueMotherCounter = rand.nextInt(motherShotTime / 2) - deadTime;
+		redMotherCounter = rand.nextInt(motherShotTime / 2) - deadTime;
 		blueMother = new Mother(360, 30);
 		redMother = new Mother(360, 575);
 		blueMother.setType(EntityType.blueMotherShip);
+		blueMother.setShotImage(largeBlueShotImage);
+		blueMother.setImage(blueMotherImage);
 		redMother.setType(EntityType.redMotherShip);
 		blueMother.setShotSound(sounds.get("blueMotherShoot"));
 		redMother.setShotSound(sounds.get("redMotherShoot"));
+		redMother.setShotImage(largeRedShotImage);
 		entities.add(blueMother);
 		entities.add(redMother);
 	}
@@ -223,7 +253,7 @@ public class ShieldCommander extends BasicGameState {
 			}
 			for (int i = 0; i < toRemove.size(); i++)
 				entities.remove(toRemove.get(i));
-			
+
 			// update the entities
 			for (Entity entity : entities) {
 				entity.update(delta);
@@ -282,7 +312,16 @@ public class ShieldCommander extends BasicGameState {
 	public void render(GameContainer container, StateBasedGame game, Graphics g)
 			throws SlickException {
 		for (Entity entity : entities) {
-			g.fill(entity.shape);
+			Image image = entity.getImage();
+			if (entity.getImage() != null) {
+				float x = entity.getX();
+				float y = entity.getY();
+				float width = entity.getWidth();
+				float height = entity.getHeight();
+				image.draw(x - width / 2, y - height / 2, width * 1.1f,
+						height * 0.7f);
+			} else
+				g.fill(entity.shape);
 		}
 
 	}

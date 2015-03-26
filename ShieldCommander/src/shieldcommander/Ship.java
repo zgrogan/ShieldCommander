@@ -3,6 +3,7 @@ package shieldcommander;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Sound;
 
 public abstract class Ship extends Entity {
@@ -10,6 +11,7 @@ public abstract class Ship extends Entity {
 	protected int hitPoints;
 	protected Sound shotSound;
 	protected Sound explodeSound;
+	protected Image shotImage;
 
 	public abstract void shoot(ArrayList<Entity> entities, Random rand);
 
@@ -49,6 +51,10 @@ public abstract class Ship extends Entity {
 	
 	public void setShotSound(Sound sound) {
 		this.shotSound = sound;
+	}
+	
+	public void setShotImage(Image image) {
+		this.shotImage = image;
 	}
 
 }

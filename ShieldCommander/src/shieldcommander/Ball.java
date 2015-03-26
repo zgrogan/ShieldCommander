@@ -27,6 +27,7 @@ public class Ball extends Entity {
 		this.direction = (float) ((direction / 180) * PI);
 		this.speed = speed;
 		this.radius = radius;
+		width = height = radius * 2;
 		this.shape = new Circle(x - (radius), y - (radius), radius);
 		this.deltaCounter = 0;
 	}
@@ -69,15 +70,15 @@ public class Ball extends Entity {
 
 	public void collide(Entity other) {
 		if (collidable)
-			if (other.getType() == EntityType.redShield
-					|| other.getType() == EntityType.blueShield) {
+			if (other.getType() == EntityType.blueShield
+					|| other.getType() == EntityType.redShield) {
 				this.direction = (float) (PI - direction); // reflect
 				collidable = false; // prevent collision sticking
 				float diffX = this.x - other.getX();
 				// give up to 45 degrees of angle based on where ball hits paddle
 				float offset = (float) ((PI / 4) * diffX / (other.shape
 						.getWidth() / 2));
-				direction = (other.getType() == EntityType.redShield) 
+				direction = (other.getType() == EntityType.blueShield) 
 						? direction + offset
 						: direction - offset;
 			} else {

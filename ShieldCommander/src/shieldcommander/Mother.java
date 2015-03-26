@@ -15,7 +15,9 @@ public class Mother extends Ship {
 	public Mother(int x, int y) {
 		this.x = x;
 		this.y = y;
-		this.shape = new Rectangle(0, y - 10, 720, 20);
+		this.width = 720;
+		this.height = 30;
+		this.shape = new Rectangle(0, y - height/2, width, height);
 		this.hitPoints = 500;
 	}
 
@@ -31,6 +33,7 @@ public class Mother extends Ship {
 		} else {
 			ball.setType(EntityType.largeRedShot);
 		}
+		ball.setImage(shotImage);
 		entities.add(ball);
 		// a hack.  get the sounds close to same volume.
 		if (this.type == EntityType.blueMotherShip)
