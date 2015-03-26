@@ -3,7 +3,6 @@ package shieldcommander;
 import org.lwjgl.input.Controller;
 import org.lwjgl.input.Mouse;
 import org.newdawn.slick.geom.Polygon;
-import org.newdawn.slick.geom.Rectangle;
 
 public class Paddle extends Entity {
 	public static int windowX = 720;

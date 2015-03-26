@@ -3,7 +3,6 @@ package shieldcommander;
 import java.util.ArrayList;
 import java.util.Random;
 
-import org.newdawn.slick.Image;
 import org.newdawn.slick.Sound;
 import org.newdawn.slick.geom.Rectangle;
 

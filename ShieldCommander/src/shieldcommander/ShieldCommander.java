@@ -62,8 +62,6 @@ public class ShieldCommander extends BasicGameState {
 	// time between shots
 	private int motherShotTime = 5000;
 	private int fighterShotTime = 10000;
-	private int blueFighterShotTime;
-	private int redFighterShotTime;
 
 	// entities
 	private ArrayList<Entity> entities;
@@ -118,7 +116,6 @@ public class ShieldCommander extends BasicGameState {
 		// images
 		blueFighterImage = new Image("data/img/spaceships/blue_fighter.png");
 		blueShieldImage = blueFighterImage;
-		blueMotherImage = blueFighterImage;
 		smallBlueShotImage = new Image("data/img/shots/blueShot.png");
 		largeBlueShotImage = smallBlueShotImage;
 		smallRedShotImage = new Image("data/img/shots/redShot.png");
