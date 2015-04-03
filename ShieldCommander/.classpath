@@ -18,5 +18,7 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/Mark/git/ShieldCommander/ShieldCommander/lib/native/windows"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Mark/git/ShieldCommander-1/ShieldCommander/lib/jar/jogg-0.0.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Mark/git/ShieldCommander-1/ShieldCommander/lib/jar/jorbis-0.0.15.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
