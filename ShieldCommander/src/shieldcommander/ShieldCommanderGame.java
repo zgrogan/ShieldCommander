@@ -43,9 +43,9 @@ public class ShieldCommanderGame extends StateBasedGame {
 	public void initStatesList(GameContainer gc) throws SlickException {
 		this.gc = gc;
 		ShieldCommander sc = ShieldCommander.getSheildCommander();
+		addState(new Loading(sc));
 		addState(sc);
-		addState(new Pause(sc));
-		this.enterState(1);
+		this.enterState(0);
 		
 	}
 

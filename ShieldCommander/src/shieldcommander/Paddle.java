@@ -20,7 +20,7 @@ public class Paddle extends Entity {
 		this.type = type;
 		offset = (type == EntityType.blueShield) ? height / 2 : -height / 2;
 
-		float[] points = new float[] { x, y + offset, x - width / 2, y - offset,
+		float[] points = new float[] { x - width/4, y + offset/2, x + width/4, y + offset/2, x - width / 2, y - offset,
 				x + width / 2, y - offset };
 		// make a triangle to closely approximate hit box.
 		shape = new Polygon(points);
@@ -43,8 +43,8 @@ public class Paddle extends Entity {
 			x = width / 2;
 		if (x > windowX - width / 2)
 			x = (windowX - width / 2);
-		float[] points = new float[] { x, y + offset, x - width / 2, y - offset,
-				x + width / 2, y - offset};
+		float[] points = new float[] { x - width/6, y, x + width/6, y, x + width / 2, y - offset,
+				x - width / 2, y - offset };
 		// make a triangle to closely approximate hit box.
 		shape = new Polygon(points);
 	}

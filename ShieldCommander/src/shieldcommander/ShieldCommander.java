@@ -35,6 +35,7 @@ public class ShieldCommander extends BasicGameState {
 	private Image redMotherImage;
 	private Image redShieldImage;
 	private Image blueShieldImage;
+	private Image backgroundImage;
 
 	// Time before firing
 	private int deadTime = 3000;
@@ -51,7 +52,6 @@ public class ShieldCommander extends BasicGameState {
 
 	// sounds
 	private HashMap<String, Sound> sounds;
-	private Music music;
 
 	// shot counters
 	static int redFighterCounter = 0;
@@ -94,9 +94,6 @@ public class ShieldCommander extends BasicGameState {
 	@Override
 	public void enter(GameContainer gc, StateBasedGame game) {
 		try {
-			waveCount += 1;
-			music.stop();
-
 			init(this.gc, this.game);
 		} catch (SlickException e) {
 			e.printStackTrace();
@@ -114,8 +111,10 @@ public class ShieldCommander extends BasicGameState {
 		}
 
 		// images
+		backgroundImage = new Image("data/img/backgrounds/hdspace.png");
 		blueFighterImage = new Image("data/img/spaceships/blue_fighter.png");
 		blueShieldImage = blueFighterImage;
+		blueMotherImage = blueFighterImage;
 		smallBlueShotImage = new Image("data/img/shots/blueShot.png");
 		largeBlueShotImage = smallBlueShotImage;
 		smallRedShotImage = new Image("data/img/shots/redShot.png");
@@ -136,18 +135,6 @@ public class ShieldCommander extends BasicGameState {
 				new Sound("sounds/Pew/MothershipFire1.wav"));
 		sounds.put("blueMotherShoot", new Sound(
 				"sounds/Pew/MothershipFire2.wav"));
-		switch (waveCount % 3) {
-		case 2:
-			music = new Music("sounds/Music/Round1.ogg");
-			break;
-		case 0:
-			music = new Music("sounds/Music/Round2.ogg");
-			break;
-		case 1:
-			music = new Music("sounds/Music/Round3.ogg");
-			break;
-		}
-		music.loop();
 
 		// start random number generator
 		rand = new Random(new Date().getTime());
@@ -308,6 +295,7 @@ public class ShieldCommander extends BasicGameState {
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g)
 			throws SlickException {
+		backgroundImage.draw();
 		for (Entity entity : entities) {
 			Image image = entity.getImage();
 			if (entity.getImage() != null) {
