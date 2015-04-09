@@ -32,14 +32,14 @@ public class Loading extends BasicGameState {
 	@Override
 	public void enter(GameContainer gc, StateBasedGame game) {
 		try {
-		switch (waveCount++ % 3) {
-		case 2:
+		switch (++waveCount % 3) {
+		case 1:
 				music = new Music("sounds/Music/Round1.ogg");
 			break;
-		case 0:
+		case 2:
 			music = new Music("sounds/Music/Round2.ogg");
 			break;
-		case 1:
+		case 0:
 			music = new Music("sounds/Music/Round3.ogg");
 			break;
 		}

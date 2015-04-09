@@ -11,4 +11,5 @@ public class EntityType {
 	final static int smallRedShot = 8;
 	final static int blueShield = 9;
 	final static int redShield = 10;
+	final static int sploshun = 11;
 }

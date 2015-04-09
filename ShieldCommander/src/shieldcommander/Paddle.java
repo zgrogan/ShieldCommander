@@ -18,7 +18,7 @@ public class Paddle extends Entity {
 		this.width = width;
 		this.height = height;
 		this.type = type;
-		offset = (type == EntityType.blueShield) ? height / 2 : -height / 2;
+		offset = height / 2;
 
 		float[] points = new float[] { x - width/4, y + offset/2, x + width/4, y + offset/2, x - width / 2, y - offset,
 				x + width / 2, y - offset };

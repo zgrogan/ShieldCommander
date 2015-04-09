@@ -11,9 +11,9 @@ import org.lwjgl.input.Controllers;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
+import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -23,6 +23,8 @@ public class ShieldCommander extends BasicGameState {
 	private static final int id = 1;
 	private StateBasedGame game;
 	private GameContainer gc;
+	private boolean gameEnding = false;
+	private int gameEndTimer = 0;
 
 	// images
 	private Image smallBlueShotImage;
@@ -36,6 +38,9 @@ public class ShieldCommander extends BasicGameState {
 	private Image redShieldImage;
 	private Image blueShieldImage;
 	private Image backgroundImage;
+	private int bgOffsetX = 0;
+	private int bgOffsetY = 0;
+	private SpriteSheet sploshun;
 
 	// Time before firing
 	private int deadTime = 3000;
@@ -43,9 +48,6 @@ public class ShieldCommander extends BasicGameState {
 	// Win Counts
 	private int redWins = 0;
 	private int blueWins = 0;
-
-	// Wave Number
-	private int waveCount = 0;
 
 	// detected joysticks
 	static ArrayList<Controller> controllers;
@@ -62,6 +64,9 @@ public class ShieldCommander extends BasicGameState {
 	// time between shots
 	private int motherShotTime = 5000;
 	private int fighterShotTime = 10000;
+
+	// game end time
+	private static int gameEndTime = 2000;
 
 	// entities
 	private ArrayList<Entity> entities;
@@ -93,6 +98,10 @@ public class ShieldCommander extends BasicGameState {
 
 	@Override
 	public void enter(GameContainer gc, StateBasedGame game) {
+		gameEnding = false;
+		gameEndTimer = 0;
+		bgOffsetX = rand.nextInt(backgroundImage.getWidth() - gc.getWidth());
+		bgOffsetY = rand.nextInt(backgroundImage.getHeight() - gc.getHeight());
 		try {
 			init(this.gc, this.game);
 		} catch (SlickException e) {
@@ -113,12 +122,16 @@ public class ShieldCommander extends BasicGameState {
 		// images
 		backgroundImage = new Image("data/img/backgrounds/hdspace.png");
 		blueFighterImage = new Image("data/img/spaceships/blue_fighter.png");
+		redFighterImage = new Image("data/img/spaceships/red_fighter.png");
 		blueShieldImage = blueFighterImage;
-		blueMotherImage = blueFighterImage;
+		blueMotherImage = new Image("data/img/spaceships/blue_mother.png");
+		redShieldImage = redFighterImage;
+		redMotherImage = new Image("data/img/spaceships/red_mother.png");
 		smallBlueShotImage = new Image("data/img/shots/blueShot.png");
 		largeBlueShotImage = smallBlueShotImage;
 		smallRedShotImage = new Image("data/img/shots/redShot.png");
 		largeRedShotImage = smallRedShotImage;
+		sploshun = new SpriteSheet("data/img/sploshuns/sploshun.png", 100, 100);
 
 		// initialize sounds
 		sounds.put("ballExplode", new Sound("sounds/Boom/Hit.ogg"));
@@ -164,6 +177,7 @@ public class ShieldCommander extends BasicGameState {
 		redShield = controllers.size() > 1 ? new Paddle(100, 510, 100, 15,
 				EntityType.redShield, controllers.get(1)) : new Paddle(50, 510,
 				100, 30, EntityType.redShield);
+		redShield.setImage(redShieldImage);
 		entities.add(blueShield);
 		entities.add(redShield);
 
@@ -185,6 +199,7 @@ public class ShieldCommander extends BasicGameState {
 			red.setType(EntityType.redFighter);
 			red.setShotSound(sounds.get("redFighterShoot"));
 			red.setShotImage(smallRedShotImage);
+			red.setImage(redFighterImage);
 			blueFighters.add(blue);
 			redFighters.add(red);
 			entities.add(blue);
@@ -203,82 +218,111 @@ public class ShieldCommander extends BasicGameState {
 		blueMother.setShotSound(sounds.get("blueMotherShoot"));
 		redMother.setShotSound(sounds.get("redMotherShoot"));
 		redMother.setShotImage(largeRedShotImage);
+		redMother.setImage(redMotherImage);
 		entities.add(blueMother);
 		entities.add(redMother);
 	}
 
 	public void update(GameContainer container, StateBasedGame game, int delta)
 			throws SlickException {
-		if (blueMother.isDead() || redMother.isDead()) {
-			if (blueMother.isDead())
+		if ((blueMother.isDead() || redMother.isDead()) && !gameEnding) {
+			this.gameEnding = true;
+			if (blueMother.isDead()) {
 				redWins++;
-			if (redMother.isDead())
+			}
+			if (redMother.isDead()) {
 				blueWins++;
-			game.enterState(0);
-		} else {
-			// remove dead entities
-			ArrayList<Entity> toRemove = new ArrayList<Entity>();
-			for (Entity entity : entities) {
-				if (entity.isDead()) {
-					// decrement fighter count
-					if (entity.getType() == EntityType.blueFighter) {
-						numBlueFighters--;
-						blueFighters.remove(entity);
-						this.fighterShotTime -= 1000;
+			}
+		}
+		if (gameEnding) {
+			gameEndTimer += delta;
+			if (gameEndTimer > gameEndTime)
+				game.enterState(0);
+		}
+		// remove dead entities
+		ArrayList<Entity> toRemove = new ArrayList<Entity>();
+		ArrayList<Entity> toAdd = new ArrayList<Entity>();
+		for (Entity entity : entities) {
+			if (entity.isDead()) {
+				// decrement fighter count
+				if (entity.getType() == EntityType.blueFighter) {
+					numBlueFighters--;
+					blueFighters.remove(entity);
+					this.fighterShotTime -= 1000;
+				}
+				if (entity.getType() == EntityType.redFighter) {
+					numRedFighters--;
+					redFighters.remove(entity);
+					this.fighterShotTime -= 1000;
+				}
+				// add sploshuns
+				switch (entity.getType()) {
+				// sploshuns don't splode
+				case EntityType.sploshun:
+					break;
+				// shots splode fast
+				case EntityType.smallBlueShot:
+				case EntityType.smallRedShot:
+				case EntityType.largeBlueShot:
+				case EntityType.largeRedShot:
+					toAdd.add(new Sploshun(entity, 250, sploshun));
+					break;
+				// ships take longer to splode
+				case EntityType.redMotherShip:
+				case EntityType.blueMotherShip:
+					toAdd.add(new Sploshun(entity, 2000, sploshun));
+					break;
+				default:
+					toAdd.add(new Sploshun(entity, sploshun));
+				}
+				// remove the object
+				toRemove.add(entity);
+			}
+		}
+		for (int i = 0; i < toRemove.size(); i++)
+			entities.remove(toRemove.get(i));
+		entities.addAll(toAdd);
+
+		// update the entities
+		for (Entity entity : entities) {
+			entity.update(delta);
+		}
+
+		// fighters shoot
+		blueFighterCounter += delta;
+		redFighterCounter += delta;
+		if (numBlueFighters > 0)
+			if (blueFighterCounter > fighterShotTime / numBlueFighters) {
+				blueFighters.get(rand.nextInt(numBlueFighters)).shoot(entities,
+						rand);
+				blueFighterCounter = 0;
+			}
+		if (numRedFighters > 0)
+			if (redFighterCounter > fighterShotTime / numRedFighters) {
+				redFighters.get(rand.nextInt(numRedFighters)).shoot(entities,
+						rand);
+				redFighterCounter = 0;
+			}
+
+		// motherships shoot
+		blueMotherCounter += delta;
+		redMotherCounter += delta;
+		if (blueMotherCounter > motherShotTime) {
+			blueMother.shoot(entities, rand);
+			blueMotherCounter = 0;
+		}
+		if (redMotherCounter > motherShotTime) {
+			redMother.shoot(entities, rand);
+			redMotherCounter = 0;
+		}
+
+		// collision detection
+		for (Entity entity : entities) {
+			for (Entity other : entities) {
+				if (other != entity)
+					if (other.getShape().intersects(entity.getShape())) {
+						entity.collide(other);
 					}
-					if (entity.getType() == EntityType.redFighter) {
-						numRedFighters--;
-						redFighters.remove(entity);
-						this.fighterShotTime -= 1000;
-					}
-					// remove the object
-					toRemove.add(entity);
-				}
-			}
-			for (int i = 0; i < toRemove.size(); i++)
-				entities.remove(toRemove.get(i));
-
-			// update the entities
-			for (Entity entity : entities) {
-				entity.update(delta);
-			}
-
-			// fighters shoot
-			blueFighterCounter += delta;
-			redFighterCounter += delta;
-			if (numBlueFighters > 0)
-				if (blueFighterCounter > fighterShotTime / numBlueFighters) {
-					blueFighters.get(rand.nextInt(numBlueFighters)).shoot(
-							entities, rand);
-					blueFighterCounter = 0;
-				}
-			if (numRedFighters > 0)
-				if (redFighterCounter > fighterShotTime / numRedFighters) {
-					redFighters.get(rand.nextInt(numRedFighters)).shoot(
-							entities, rand);
-					redFighterCounter = 0;
-				}
-
-			// motherships shoot
-			blueMotherCounter += delta;
-			redMotherCounter += delta;
-			if (blueMotherCounter > motherShotTime) {
-				blueMother.shoot(entities, rand);
-				blueMotherCounter = 0;
-			}
-			if (redMotherCounter > motherShotTime) {
-				redMother.shoot(entities, rand);
-				redMotherCounter = 0;
-			}
-
-			// collision detection
-			for (Entity entity : entities) {
-				for (Entity other : entities) {
-					if (other != entity)
-						if (other.getShape().intersects(entity.getShape())) {
-							entity.collide(other);
-						}
-				}
 			}
 		}
 	}
@@ -293,9 +337,10 @@ public class ShieldCommander extends BasicGameState {
 	}
 
 	@Override
-	public void render(GameContainer container, StateBasedGame game, Graphics g)
+	public void render(GameContainer gc, StateBasedGame game, Graphics g)
 			throws SlickException {
-		backgroundImage.draw();
+		backgroundImage.draw(0, 0, bgOffsetX, bgOffsetY,
+				bgOffsetX + gc.getWidth() * 3, bgOffsetY + gc.getHeight() * 4);
 		for (Entity entity : entities) {
 			Image image = entity.getImage();
 			if (entity.getImage() != null) {
@@ -318,5 +363,4 @@ public class ShieldCommander extends BasicGameState {
 	public int getBlueWins() {
 		return this.blueWins;
 	}
-
 }

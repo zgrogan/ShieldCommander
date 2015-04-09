@@ -16,8 +16,9 @@ public class Mother extends Ship {
 		this.x = x;
 		this.y = y;
 		this.width = 720;
-		this.height = 30;
-		this.shape = new Rectangle(0, y - height/2, width, height);
+		this.height = 40;
+		
+		this.shape = new Rectangle(x-width/2, y-height/2, x + width/2, y-height/4);
 		this.hitPoints = 500;
 	}
 
