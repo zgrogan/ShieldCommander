@@ -12,7 +12,6 @@ public class Loading extends BasicGameState {
 	
 	private static final int id = 0;
 	private int timer = 0;
-	private StateBasedGame game;
 	private ShieldCommander sc;
 	private static int waveCount = 0;
 
@@ -25,7 +24,6 @@ public class Loading extends BasicGameState {
 	@Override
 	public void init(GameContainer gc, StateBasedGame game)
 			throws SlickException {
-		this.game = game;
 		
 	}
 	
@@ -73,7 +71,7 @@ public class Loading extends BasicGameState {
 
 	@Override
 	public int getID() {
-		return this.id;
+		return Loading.id;
 	}
 
 }

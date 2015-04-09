@@ -307,11 +307,11 @@ public class ShieldCommander extends BasicGameState {
 		// motherships shoot
 		blueMotherCounter += delta;
 		redMotherCounter += delta;
-		if (blueMotherCounter > motherShotTime) {
+		if (blueMotherCounter > motherShotTime && !blueMother.isDead()) {
 			blueMother.shoot(entities, rand);
 			blueMotherCounter = 0;
 		}
-		if (redMotherCounter > motherShotTime) {
+		if (redMotherCounter > motherShotTime && !redMother.isDead()) {
 			redMother.shoot(entities, rand);
 			redMotherCounter = 0;
 		}

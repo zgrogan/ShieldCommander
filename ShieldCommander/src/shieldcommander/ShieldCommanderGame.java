@@ -45,7 +45,6 @@ public class ShieldCommanderGame extends StateBasedGame {
 		ShieldCommander sc = ShieldCommander.getSheildCommander();
 		addState(new Loading(sc));
 		addState(sc);
-		this.enterState(0);
 		
 	}
 

@@ -1,6 +1,5 @@
 package shieldcommander;
 
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
 import org.newdawn.slick.geom.Circle;
 
@@ -14,15 +13,7 @@ public class Ball extends Entity {
 	private static Sound explodeSound;
 
 	public Ball(float x, float y, int radius, float direction, float speed) {
-
-		/*
-		 * if (windowX - radius > x) this.x = radius + 1; else
-		 */
 		this.x = x;
-
-		/*
-		 * if (windowY - radius > y) this.y = radius + 1; else
-		 */
 		this.y = y;
 		this.direction = (float) ((direction / 180) * PI);
 		this.speed = speed;
