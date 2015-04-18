@@ -12,7 +12,6 @@ public class ShieldCommanderGame extends StateBasedGame {
 
 	public ShieldCommanderGame(String name) {
 		super(name);
-		// TODO Auto-generated constructor stub
 	}
 
 	public static void main(String[] args) {
@@ -24,6 +23,7 @@ public class ShieldCommanderGame extends StateBasedGame {
 			app.setAlwaysRender(true);
 			app.setVSync(true);
 			app.setTargetFrameRate(60);
+			app.setShowFPS(false);
 			app.start();
 		} catch (SlickException e) {
 			e.printStackTrace();

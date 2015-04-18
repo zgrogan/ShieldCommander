@@ -100,8 +100,8 @@ public class ShieldCommander extends BasicGameState {
 	public void enter(GameContainer gc, StateBasedGame game) {
 		gameEnding = false;
 		gameEndTimer = 0;
-		bgOffsetX = rand.nextInt(backgroundImage.getWidth() - gc.getWidth());
-		bgOffsetY = rand.nextInt(backgroundImage.getHeight() - gc.getHeight());
+		bgOffsetX = (backgroundImage.getWidth() - gc.getWidth());
+		bgOffsetY = (backgroundImage.getHeight() - gc.getHeight());
 		try {
 			init(this.gc, this.game);
 		} catch (SlickException e) {
@@ -120,7 +120,7 @@ public class ShieldCommander extends BasicGameState {
 		}
 
 		// images
-		backgroundImage = new Image("data/img/backgrounds/hdspace.png");
+		backgroundImage = new Image("data/img/backgrounds/hdspace2.png");
 		blueFighterImage = new Image("data/img/spaceships/blue_fighter.png");
 		redFighterImage = new Image("data/img/spaceships/red_fighter.png");
 		blueShieldImage = blueFighterImage;
@@ -225,6 +225,7 @@ public class ShieldCommander extends BasicGameState {
 
 	public void update(GameContainer container, StateBasedGame game, int delta)
 			throws SlickException {
+		// game end conditions
 		if ((blueMother.isDead() || redMother.isDead()) && !gameEnding) {
 			this.gameEnding = true;
 			if (blueMother.isDead()) {
@@ -234,11 +235,13 @@ public class ShieldCommander extends BasicGameState {
 				blueWins++;
 			}
 		}
+		
 		if (gameEnding) {
 			gameEndTimer += delta;
 			if (gameEndTimer > gameEndTime)
 				game.enterState(0);
 		}
+		
 		// remove dead entities
 		ArrayList<Entity> toRemove = new ArrayList<Entity>();
 		ArrayList<Entity> toAdd = new ArrayList<Entity>();
@@ -340,7 +343,7 @@ public class ShieldCommander extends BasicGameState {
 	public void render(GameContainer gc, StateBasedGame game, Graphics g)
 			throws SlickException {
 		backgroundImage.draw(0, 0, bgOffsetX, bgOffsetY,
-				bgOffsetX + gc.getWidth() * 3, bgOffsetY + gc.getHeight() * 4);
+				bgOffsetX + gc.getWidth() * 8, bgOffsetY + gc.getHeight() * 5);
 		for (Entity entity : entities) {
 			Image image = entity.getImage();
 			if (entity.getImage() != null) {

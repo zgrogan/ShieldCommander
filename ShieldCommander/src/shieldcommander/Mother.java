@@ -8,7 +8,7 @@ import org.newdawn.slick.geom.Rectangle;
 
 public class Mother extends Ship {
 
-	public static int SHOT_SIZE = 9;
+	public static int SHOT_SIZE = 15;
 	public static int SHOT_SPEED = 6;
 	public static Sound explodeSound;
 	
@@ -18,7 +18,7 @@ public class Mother extends Ship {
 		this.width = 720;
 		this.height = 40;
 		
-		this.shape = new Rectangle(x-width/2, y-height/2, x + width/2, y-height/4);
+		this.shape = new Rectangle(x-width/2, y-height/2, x + width/2, y-height/2);
 		this.hitPoints = 500;
 	}
 

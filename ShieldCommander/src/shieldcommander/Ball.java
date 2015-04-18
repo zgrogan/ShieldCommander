@@ -7,7 +7,7 @@ public class Ball extends Entity {
 	public static int windowX = 720;
 	public static int windowY = 600;
 	public static double PI = Math.PI;
-	public static int inactiveTime = 400;
+	public static int inactiveTime = 600;
 	private int radius;
 	private int deltaCounter; // used for timers.
 	private static Sound explodeSound;
